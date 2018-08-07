@@ -34,6 +34,7 @@ export default class Player {
       pX: this.shape.x,
       pY: this.shape.y,
     }, position);
+    this.growRate = 1;
 
     this._drawBody(this.position.x, this.position.y);
   }
@@ -50,6 +51,10 @@ export default class Player {
     c.arc(x, y, radius, 0, 2 * Math.PI, true);
     c.fillStyle = color;
     c.fill();
+  }
+
+  eat() {
+    this.shape.radius = this.shape.radius + this.growRate;
   }
 
   update(state) {

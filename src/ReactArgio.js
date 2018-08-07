@@ -25,6 +25,46 @@ export class ReactArgio extends Component {
     requestAnimationFrame(this.update);
   }
 
+  _getDistance(x1, y1, x2, y2) {
+    const xDistance = x1 - x2;
+    const yDistance = y1 - y2;
+
+    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+  }
+
+  _detectCollisions() {
+    const playerX = this.player.xPosition;
+    const playerY = this.player.yPosition;
+    const playerR = this.player.radius;
+
+    for (let i = 0; i < this.food.length; i++) {
+      const fX = this.food[i].xPosition;
+      const fY = this.food[i].yPosition;
+      const fRadius = this.food[i].radius;
+      const foodToPlayerDistance = this._getDistance(fX, fY, playerX, playerY);
+      const fpCombinedMass = fRadius + playerR;
+
+      if (foodToPlayerDistance < fpCombinedMass) {
+        this.player.eat();
+        this.food[i] = new Food({ canvas: this.c });
+      }
+
+      for ( let b = 0; b < this.bots.length; b++) {
+        if ( typeof this.bots[i] === 'undefined') break;
+        const bX = this.bots[i].xPosition;
+        const bY = this.bots[i].yPosition;
+        const bRadius = this.bots[i].radius;
+        const botToFoodDistance = this._getDistance(bX, bY, fX, fY);
+        const bfCombinedMass = bRadius + fRadius;
+
+        if (botToFoodDistance < bfCombinedMass) {
+          this.bots[i].eat();
+          this.food[i] = new Food({ canvas: this.c });
+        }
+      }
+    }
+  }
+
   // With alpha set to false on 2d context for optimized performance,
   // set bg color styles.
   _setBackgroundLayerStyles() {
@@ -78,14 +118,6 @@ export class ReactArgio extends Component {
     b.restore();
   }
 
-  // _setCamera() {
-  //   const c = this.c;
-
-  //   c.save();
-  //   c.translate(this.player.x - WORLD.WIDTH / );
-  //   c.restore();
-  // }
-
   _randomMinMax(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
   }
@@ -133,6 +165,8 @@ export class ReactArgio extends Component {
     }
 
     this.player.update(this.state);
+
+    this._detectCollisions();
 
     requestAnimationFrame(this.update);
   }

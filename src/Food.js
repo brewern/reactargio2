@@ -1,6 +1,18 @@
 import { WORLD } from './Constants';
 
 export default class Food {
+  get xPosition() {
+    return this.position.x;
+  }
+
+  get yPosition() {
+    return this.position.y;
+  }
+
+  get radius() {
+    return this.shape.radius;
+  }
+
   constructor({ canvas }) {
     this.c = canvas;
     this.shape = {
